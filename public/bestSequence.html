@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript"></script>            
+    <meta charset = "utf-8">
+</head>
+
+<body>
+    <h1 align = "center">最佳工作序列</h1>
+    <h3 align = "center">10150412 贡威腾</h3>
+<script>
+    var task = new Array(1,2,3,4);
+    var time = new Array(4,3,2,1);
+    var deadline = new Array(10,8,4,2);
+    var value = new Array(2,3,3,6);
+    var cout;
+
+    function judge(n,m)
+    {
+        if (value[n] > value[m])
+        {
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    function PrintJobSchedule(task,time,deadline,value)
+    {
+        var n = 4;
+        var result = new Array;
+        for (var i = 0;i < n;i++)
+        {
+            for (var j = 0;j < n;j++)
+            {
+                if (i == j){
+                    continue;
+                }
+                result[i][j] == judge(i,j);
+            }
+        }
+        var slot = new Array(false,false,false,false);
+        for (var j = 0;i < n;i++)
+        {
+            for (var i = min(n,deadline(i) - 1 ; j >= 0;i--)
+            {
+                if (slot[i] == false)
+                {
+                    result[i] = j;
+                    slot[i] = true;
+                    break;
+                }
+            }
+        }
+        for (var i = 0;i < n;i++)
+        {
+            if (slot[i])
+            {
+                cout << id[i] << " ";
+            }
+        }
+    }
+    PrintJobSchedule(task,time,deadline,value);
+    for (var i = 0; i < n ; i++)
+    {
+        document.write(clou[i]);
+    }
+    
+    
+</script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript"></script>            
+    <meta charset = "utf-8">
+</head>
+<body>
+        <h1>绘制姓名</h1>
+        <h3>10150412 贡威腾</h3>
+
+<input id = "fileinput" type = "file" onchange = "myFunction"></input>
+<button onclick = "myFunction()" > 绘制Word1 </button>
+<br> </br>
+<canvas id = "myCanvas1" width = "160" height = "160"
+style = "border : 1px solid #99D499;" >    
+</canvas>
+<br> </br>
+
+<input id = "fileinput" type = "file" onchange = "myFunction"></input>
+<button onclick = "myFunction()" > 绘制Word2 </button>
+<br> </br>
+<canvas id = "myCanvas2" width = "160" height = "160"
+style = "border : 1px solid #99D499;">
+</canvas>
+
+<br></br>
+<input id = "fileinput" type = "file" onchange = "myFunction"></input>
+<button onclick = "myFunction()" > 绘制Word3 </button>
+<br> </br>
+<canvas id = "myCanvas3" width = "160" height = "160"
+style = "border : 1px solid #99D499;">
+</canvas>
+
+<script>
+function myFunction()
+{
+    var file=document.getElementById("fileinput").files[0];
+	var reader=new FileReader();
+	reader.readAsText(file);
+	reader.onload=function(e)
+	     {
+            var str = reader.result;
+             var Elements = new Array();
+             Elements = str.split("END\r\n");
+             var lines = new Array();
+             for (var m = 0;m < Elements.length ; m++)
+             {
+                 lines[m] = new Array();
+                 for (var n = 0;n < 10; n++)
+                 {
+                     lines[m][n] = "";
+                 }
+             }
+             for (var i = 0;i < Elements.length ; i++)
+             {                 
+                  lines[i] = Elements[i].split("\r\n");
+              }
+            var word = new Array();
+            for (var m = 0;m < 100 ; m++)
+             {
+                 word[m] = new Array();
+                 for (var n = 0;n < 20; n++)
+                 {
+                     word[m][n] = "";
+                 }
+             }
+            for (var j = 0;i < lines[i].length;i++)
+            {
+                  word[m] = lines[i].split(",");
+            }        
+        }  
+        var c = document.getElementById("myCanvas1");
+        var ctx1 = c.getContext("2d");
+        ctx1.fillStyle = "FF0000";
+        ctx1.lineWidth = 3;
+        for (var i = 0;i < 160; i + 10)
+        {
+           ctx1.moveTo(i,0);
+           ctx1.lineTo(i,160);
+           ctx1.moveTo(0,i);
+           ctx1.lineTo(160,i);
+        }
+        for (var i = 0;i < word.length;i++)
+        {
+            for (var j = 0;j < word[i].length - 3;j+2)
+            ctx1.moveTo(word[i][j],word[i][j+1]);
+            ctx1.lineTo(word[i][j+2],word[i][j+3]);
+        } 
+        ctx1.stroke();
+        element.appendChild(c);
+}
+
+
+</script>
+
+</body>
+</html>
