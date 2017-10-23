@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript"></script>            
+    <meta charset = "utf-8">
+</head>
+<body>
+    <div id = "div1"  />
+        <h1>绘制姓名以及图形变换</h1>
+        <h3>10150412 贡威腾</h3>
+
+    <input id = "fileinput" type = "file"  />
+    <table>
+    <button onclick = "ReadFile(PointX,PointY)" >读入</button>
+    <button onclick = "DrawWord(PointX,PointY)" >绘制</button>
+    <button onclick = "ClearAll()">清屏</button>
+    </table>
+
+    <br> </br>
+    <canvas id = "myCanvas1" width = "500" height = "500"
+    style = "border : 1px solid #99D499;" >
+    </canvas>
+    <br> </br>
+    
+    <br> </br>
+    <button onclick = "leftMove()">左斜变换</button>
+    <br> </br>
+    <button onclick = "Shrugged()">耸肩变换</button>
+    <br> </br>
+    <td>请输入放大倍数：</td>
+    <input type = "number" min ="1" max ="10" id = "N" >
+    <button onclick = "Bigger()">放大变换</button>
+    <br> </br>
+    <td>请输入缩小倍数：</td>
+    <input type = "number" min ="1" max ="10" id = "M" >
+    <button onclick = "Smaller()">缩小变换</button>
+    <br> </br>
+    <td>请输入旋转角度：</td>
+    <input type = "number" min ="1" max ="180" id = "angle1" >
+    <button onclick = "clockwiseRotation()">顺时针旋转</button>
+    <button onclick = "AnticlockwiseRotation()">逆时针旋转</button>
+    <br></br>
+    <td>请输入X,Y方向平移长度：</td>
+    <input type = "number" min ="1" max = "100" id = "X" >
+    <input type = "number" min ="1" max = "100" id = "Y" >
+    <button onclick = "Translate()">平移变换</button>
+    <br> </br>
+    <td>请输入对称轴X：</td>
+    <input type = "number" min = "1" ,max = "100" id = "Xzhou">
+    <td>请输入对称轴Y：</td>
+    <input type = "number" min = "1" ,max = "100" id = "Yzhou">
+    <button onclick = "symmetryPoint()">平移变换</button>
+
+<script>
+
+var PointX = new Array();
+var PointY = new Array();
+for (var m = 0;m < 100 ; m++)
+{
+    PointX[m] = new Array;
+    PointY[m] = new Array;
+    for (var n = 0;n < 10; n++)
+    {
+        PointX[m][n] = "";
+        PointY[m][n] = "";
+    }
+}
+var c = document.getElementById("myCanvas1");
+var ctx1 = c.getContext("2d");
+ctx1.fillStyle = "FF0000";   
+
+function ReadFile(PointX,PointY)
+{
+    var file = document.getElementById("fileinput").files[0];   
+    var reader = new FileReader();
+    reader.readAsText(file);
+    reader.onload = function(e)
+    {
+        var str = this.result; 
+        for (var m = 0;m < 100 ; m++)
+        {
+            for (var n = 0;n < 10; n++)
+            {
+                PointX[m][n] = "";
+                PointY[m][n] = "";
+            }
+        }
+        var items = new Array();
+        items = str.split("END\r\n"); //存储每个笔画
+        var lines = new Array();
+        for (var m = 0;m < items.length ; m++) //存储每个笔画每行的内容
+        {
+            lines[m] = new Array();
+            for (var n = 0;n < 10;n++)
+            {
+                lines[m][n] = "";
+            }
+        }
+        for (var i = 0;i < items.length ; i++)
+        {
+            lines[i] = items[i].split("\r\n");
+        }
+        for (var p = 0;p < lines.length ; p++)
+        {
+            for (var q = 1;q < lines[p].length ; q++)
+            {
+                PointX[p][q-1] = Number(lines[p][q].split(",")[0]);
+                PointY[p][q-1] = Number(lines[p][q].split(",")[1]);
+            }
+        }
+        ctx1.lineWidth = 0.5; 
+        for (var i = 0;i <= 50; i++)
+        {
+            ctx1.beginPath();
+            ctx1.moveTo(i * 10,0);
+            ctx1.lineTo(i * 10,500);
+            ctx1.moveTo(0,i * 10);
+            ctx1.lineTo(500,i * 10);
+            ctx1.stroke();
+        }
+    }
+}
+
+function ClearAll()
+{
+    ctx1.clearRect(0,0,500,500);
+    ctx1.lineWidth = 0.5; 
+    for (var i = 0;i <= 50; i++)
+    {
+        ctx1.beginPath();
+        ctx1.moveTo(i * 10,0);
+        ctx1.lineTo(i * 10,500);
+        ctx1.moveTo(0,i * 10);
+        ctx1.lineTo(500,i * 10);
+        ctx1.stroke();
+    }
+}
+
+function DrawWord()
+{
+    ctx1.lineWidth = 0.5; 
+    for (var i = 0;i <= 50; i++)
+    {
+        ctx1.beginPath();
+        ctx1.moveTo(i * 10,0);
+        ctx1.lineTo(i * 10,500);
+        ctx1.moveTo(0,i * 10);
+        ctx1.lineTo(500,i * 10);
+        ctx1.stroke();
+    }
+    ctx1.lineWidth = 3; 
+    for (var i = 0;i < PointX.length;i++)
+    {        
+        for (var j = 0;j < PointX[i].length;j++)
+        {                   
+            ctx1.beginPath();
+            ctx1.moveTo(PointX[i][j],PointY[i][j]);
+            ctx1.lineTo(PointX[i][j+1],PointY[i][j+1]); 
+            ctx1.stroke();
+        }
+    }
+}
+
+function leftMove()
+{
+    //左斜变化
+    var b = PointY[0][0] - 2 * (PointX[0][0] - 10);
+    var m = 0;
+    for (var i = 0;i < PointX.length; i++)
+    {
+        for (var j = 0;j < PointX[i].length; j++)
+        {
+            m = PointX[i][j] - (PointY[i][j] - b) / 2;
+            PointX[i][j] = PointX[i][j] - (PointX[i][j] - m)/5;
+        }
+    }
+    ctx1.clearRect(0,0,500,500);
+    DrawWord(PointX,PointY,ctx1);
+}
+
+function Shrugged()
+{
+    //耸肩变化
+    var b = PointY[0][0] + 10 - PointX[0][0] / 2;
+    var n = 0;
+    for (var i = 0;i < PointX.length; i++)
+    {
+        for (var j = 0;j < PointX[i].length; j++)
+        {
+            n = (PointY[i][j] - b) / 2;
+            PointY[i][j] = PointY[i][j] + (PointX[i][j] / 2 + b - PointY[i][j]) / 5;
+        }
+    }
+    ctx1.clearRect(0,0,500,500);
+    DrawWord(PointX,PointY,ctx1);
+}
+
+function Bigger()
+{
+    //放大，N为倍数
+    var N = document.getElementById("N").value;
+    for (var i = 0;i < PointX.length; i++)
+    {
+        for (var j = 0;j < PointX[i].length; j++)
+        {
+            PointX[i][j] = Number(N) * (Number(PointX[i][j]) - Number(PointX[0][0])) + Number(PointX[0][0]);
+            PointY[i][j] = Number(N) * (Number(PointY[i][j]) - Number(PointY[0][0])) + Number(PointY[0][0]);
+        }
+    }
+    ctx1.clearRect(0,0,500,500);
+    DrawWord();
+}
+
+function Smaller()
+{
+    //缩小
+    var M = document.getElementById("M").value;
+    for (var i = 0;i < PointX.length; i++)
+    {
+        for (var j = 0;j < PointX[i].length; j++)
+        {
+            PointX[i][j] = (Number(PointX[i][j]) - Number(PointX[0][0]))/Number(M) + Number(PointX[0][0]);
+            PointY[i][j] = (Number(PointY[i][j]) - Number(PointY[0][0]))/Number(M) + Number(PointY[0][0]);
+        }
+    }
+    ctx1.clearRect(0,0,500,500);
+    DrawWord();
+}
+
+function clockwiseRotation()
+{
+    //顺时针旋转
+    var angle = document.getElementById("angle1").value;
+    for (var i = 0;i < PointX.length; i++)
+    {
+        for (var j = 0;j < PointX[i].length; j++)
+        {
+            PointX[i][j] = Number(PointX[i][j] * Math.cos(angle) - Number(PointY[i][j]) * Math.sin(angle));
+            PointY[i][j] = Number(PointY[i][j] * Math.sin(angle) + Number(PointY[i][j]) * Math.cos(angle));
+        }
+    }
+    ctx1.clearRect(0,0,500,500);
+    DrawWord();
+}
+
+function AnticlockwiseRotation()
+{
+    //逆时针旋转
+    var angle = document.getElementById("angle1").value;
+    for (var i = 0;i < PointX.length; i++)
+    {
+        for (var j = 0;j < PointX[i].length; j++)
+        {
+            PointX[i][j] = Number(PointX[i][j]) * Math.cos(-angle) - Number(PointY[i][j]) * Math.sin(-angle);
+            PointY[i][j] = Number(PointY[i][j]) * Math.sin(-angle) + Number(PointY[i][j]) * Math.cos(-angle);
+        }
+    }
+
+    ctx1.clearRect(0,0,500,500);
+    DrawWord();
+}
+
+function symmetryXLine()
+{
+    //X对称
+    for (var i = 0;i < PointX.length; i++)
+    {
+        for (var j = 0;j < PointX[i].length; j++)
+        {
+            PointY[i][j] = Number(PointY[i][j]) + 2 * (Number(Y) - Number(PointY[i][j]));
+        }
+    }
+    ctx1.clearRect(0,0,500,500);
+    DrawWord(PointX,PointY,ctx1);
+}
+
+function symmetryYLine()
+{
+    //Y对称
+    for (var i = 0;i < PointX.length; i++)
+    {
+        for (var j = 0;j < PointX[i].length; j++)
+        {
+            PointX[i][j] = Number(PointX[i][j]) + 2 * (Number(X) - Number(PointX[i][j]));
+        }
+    }
+    ctx1.clearRect(0,0,500,500);
+    DrawWord();
+}
+
+function symmetryPoint()
+{
+    //点对称
+    var Xlen = document.getElementById("Xzhou").value;
+    var Ylen = document.getElementById("Yzhou").value;
+    for (var i = 0;i < PointX.length; i++)
+    {
+        for (var j = 0;j < PointX[i].length; j++)
+        {
+            PointX[i][j] = Number(PointX[i][j]) + 2 * (Number(Xlen) - Number(PointX[i][j]));
+            PointY[i][j] = Number(PointY[i][j]) + 2 * (Number(Ylen) - Number(PointY[i][j]));
+        }
+    }
+    ctx1.clearRect(0,0,500,500);
+    DrawWord();
+}
+
+function Translate()
+{
+    //平移
+    var Xlen = document.getElementById("X").value;
+    var Ylen = document.getElementById("Y").value;  
+    for (var i = 0;i < PointX.length; i++)
+    {
+        for (var j = 0;j < PointX[i].length; j++)
+        {
+            PointX[i][j] = Number(Xlen) + Number(PointX[i][j]);
+            PointY[i][j] = Number(Ylen) + Number(PointY[i][j]);
+        }
+    }
+    ctx1.clearRect(0,0,500,500);
+    DrawWord();
+}
+</script>
+</body>
+</html>
+
+
