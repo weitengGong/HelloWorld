@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type = "text/javascript"></script>
+    <meta charset= "utf-8">
+</head>
+    <div id = "div1" />
+        <h1>地图投影</h1>
+        <h3>10150412 贡威腾</h3>
+    
+    <input id = "fileinput" type = "file"  />
+    <table>
+        <button onclick = "Readfile(PointX,PointY)">读取Gen文件</button>
+        <button onclick = "DrawWord(PointX,PointY)" >绘制</button>
+        <button onclick = "ClearAll()">清屏</button>
+    </table>
+    <br> </br>
+    <canvas id = "myCanvas1" width = "500" height = "500"
+    style = "border : 1px solid #99D499;" >
+    </canvas>
+    <br> </br>
+
+    <script>
+
+        
+            
+            var PointX = new Array();
+            var PointY = new Array();
+            for (var m = 0;m < 100 ; m++)
+            {
+                PointX[m] = new Array;
+                PointY[m] = new Array;
+                for (var n = 0;n < 10; n++)
+                {
+                    PointX[m][n] = "";
+                    PointY[m][n] = "";
+                }
+            }
+            var c = document.getElementById("myCanvas1");
+            var ctx1 = c.getContext("2d");
+            ctx1.fillStyle = "FF0000";   
+            
+            function ReadFile(PointX,PointY)
+            {
+                var file = document.getElementById("fileinput").files[0];   
+                var reader = new FileReader();
+                reader.readAsText(file);
+                reader.onload = function(e)
+                {
+                    var str = this.result; 
+                    for (var m = 0;m < 100 ; m++)
+                    {
+                        for (var n = 0;n < 10; n++)
+                        {
+                            PointX[m][n] = "";
+                            PointY[m][n] = "";
+                        }
+                    }
+                    var items = new Array();
+                    items = str.split("END\r\n"); //存储每个笔画
+                    var lines = new Array();
+                    for (var m = 0;m < items.length ; m++) //存储每个笔画每行的内容
+                    {
+                        lines[m] = new Array();
+                        for (var n = 0;n < 10;n++)
+                        {
+                            lines[m][n] = "";
+                        }
+                    }
+                    for (var i = 0;i < items.length ; i++)
+                    {
+                        lines[i] = items[i].split("\r\n");
+                    }
+                    for (var p = 0;p < lines.length ; p++)
+                    {
+                        for (var q = 1;q < lines[p].length ; q++)
+                        {
+                            PointX[p][q-1] = Number(lines[p][q].split(",")[0]);
+                            PointY[p][q-1] = Number(lines[p][q].split(",")[1]);
+                        }
+                    }
+                    ctx1.lineWidth = 0.5; 
+                    for (var i = 0;i <= 50; i++)
+                    {
+                        ctx1.beginPath();
+                        ctx1.moveTo(i * 10,0);
+                        ctx1.lineTo(i * 10,500);
+                        ctx1.moveTo(0,i * 10);
+                        ctx1.lineTo(500,i * 10);
+                        ctx1.stroke();
+                    }
+                }
+            }
+            
+            function ClearAll()
+            {
+                ctx1.clearRect(0,0,500,500);
+                ctx1.lineWidth = 0.5; 
+                for (var i = 0;i <= 50; i++)
+                {
+                    ctx1.beginPath();
+                    ctx1.moveTo(i * 10,0);
+                    ctx1.lineTo(i * 10,500);
+                    ctx1.moveTo(0,i * 10);
+                    ctx1.lineTo(500,i * 10);
+                    ctx1.stroke();
+                }
+            }
+            
+            function DrawWord()
+            {
+                ctx1.lineWidth = 0.5; 
+                for (var i = 0;i <= 50; i++)
+                {
+                    ctx1.beginPath();
+                    ctx1.moveTo(i * 10,0);
+                    ctx1.lineTo(i * 10,500);
+                    ctx1.moveTo(0,i * 10);
+                    ctx1.lineTo(500,i * 10);
+                    ctx1.stroke();
+                }
+                ctx1.lineWidth = 3; 
+                for (var i = 0;i < PointX.length;i++)
+                {        
+                    for (var j = 0;j < PointX[i].length;j++)
+                    {                   
+                        ctx1.beginPath();
+                        ctx1.moveTo(PointX[i][j],PointY[i][j]);
+                        ctx1.lineTo(PointX[i][j+1],PointY[i][j+1]); 
+                        ctx1.stroke();
+                    }
+                }
+            }
+
+
+</script>
+            
