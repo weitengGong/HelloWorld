@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type = "text/javascript">
+	</script>
+	<mata charset = "utf-8">
+<head>
+
+<body>
+	<div id = "div1"  />
+		
+	<table border="1">
+		<tr>
+			<td><center>多边形面积计算</center></td>
+			<td><center>10150412 贡威腾</center></td>
+		</tr>
+		<tr>
+			<center><th><input id = "fileinput" type = "file"  /></th></center>
+			<td>
+				<center>
+					<button onclick="Readfile()">读取</button>
+					<button onclick="Draw()">绘制</button>
+					<button onclick="Clear()">清屏</button>	
+				</center>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<center>
+					<button onclick = "Mercator()">墨卡托投影反算</button>
+					<button onclick = "Draw2()">绘制转换后图像</button>
+				</center>
+			</td>
+			<td>
+				<center>
+				<button onclick="AreaCalculate1()">计算转换前面积</button>
+				<button onclick="AreaCalculate2()">计算转换后面积</button>
+				</center>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<canvas id = "myCanvas1" width = "500" height = "500"
+				style = "border : 3px solid #99D499">
+				</canvas>
+			</td>
+			<td>
+				<center>
+				<br></br>
+				<input id = "txt0" type = "text" size="40">
+				<input id = "txt1" type = "text" size="40">
+				<input id = "txt2" type = "text" size="40">
+				<input id = "txt3" type = "text" size="40">
+				<input id = "txt4" type = "text" size="40">
+				<input id = "txt5" type = "text" size="40">
+				<input id = "txt6" type = "text" size="40">
+				<input id = "txt7" type = "text" size="40">
+				<input id = "txt8" type = "text" size="40">
+				<input id = "txt9" type = "text" size="40">
+				<input id = "txt10" type = "text" size="40">
+				<input id = "txt11" type = "text" size="40">
+				<input id = "txt12" type = "text" size="40">
+				<input id = "txt13" type = "text" size="40">
+				<input id = "txt14" type = "text" size="40">
+				</center>
+			</td>	
+		</tr>		
+		</table>
+
+<script>
+//存储投影转换后的坐标
+var PointX1 = new Array();
+var PointY1 = new Array();
+for (var m = 0;m < 20 ; m++)
+{
+	PointX1[m] = new Array;
+	PointY1[m] = new Array;
+	for (var n = 0;n < 13000; n++)
+	{
+		PointX1[m][n] = "";
+		PointY1[m][n] = "";
+	}
+}
+
+//存储最初的坐标
+var PointX2 = new Array();
+var PointY2 = new Array();
+for (var m = 0;m < 20 ; m++)
+{
+	PointX2[m] = new Array;
+	PointY2[m] = new Array;
+	for (var n = 0;n < 13000; n++)
+	{
+		PointX2[m][n] = "";
+		PointY2[m][n] = "";
+	}
+}
+
+//存储转换后显示的坐标
+var PointX3 = new Array();
+var PointY3 = new Array();
+for (var m = 0;m < 20 ; m++)
+{
+	PointX3[m] = new Array;
+	PointY3[m] = new Array;
+	for (var n = 0;n < 13000; n++)
+	{
+		PointX3[m][n] = "";
+		PointY3[m][n] = "";
+	}
+}
+
+//存储转换后实际坐标
+var PointX4 = new Array();
+var PointY4 = new Array();
+for (var m = 0;m < 20 ; m++)
+{
+	PointX4[m] = new Array;
+	PointY4[m] = new Array;
+	for (var n = 0;n < 13000; n++)
+	{
+		PointX4[m][n] = "";
+		PointY4[m][n] = "";
+	}
+}
+
+//存储最初的面积
+var Area1 = new Array();
+for (var m = 0;m < 13; m++)
+{
+	Area1[m] = new Array;
+}
+
+//存储墨卡托投影反算后的面积
+var Area2 = new Array();
+for (var m = 0;m < 13; m++)
+{
+	Area2[m] = new Array;
+}
+
+var c1 = document.getElementById("myCanvas1");
+var ctx1 = c1.getContext("2d");
+ctx1.fillStyle = "FF0000";
+
+function Readfile()
+{
+	var file = document.getElementById("fileinput").files[0];   
+	var reader = new FileReader();
+	reader.readAsText(file);
+	reader.onload = function(e)
+	{
+		var str = this.result; 
+		for (var m = 0;m < 20 ; m++)
+		{
+			for (var n = 0;n < 13000; n++)
+			{
+				PointX1[m][n] = "";
+				PointY1[m][n] = "";
+			}
+		}
+		var items = new Array();
+		items = str.split("END\r\n"); //存储每个笔画
+		var lines = new Array();
+		for (var m = 0;m < items.length ; m++) //存储每个笔画每行的内容
+		{
+			lines[m] = new Array();
+			for (var n = 0;n < 13000;n++)
+			{
+				lines[m][n] = "";
+			}
+		}
+		for (var i = 0;i < items.length ; i++)
+		{
+			lines[i] = items[i].split("\r\n");
+		}
+		for (var p = 0;p < lines.length ; p++)
+		{
+			for (var q = 1;q < lines[p].length; q++)
+			{
+				PointX1[p][q-1] = Number(lines[p][q].split(",")[0]);
+				PointY1[p][q-1] = Number(lines[p][q].split(",")[1]);
+				PointX2[p][q-1] = Number(lines[p][q].split(",")[0]);
+				PointY2[p][q-1] = Number(lines[p][q].split(",")[1]);
+			}
+		}
+		PointX3 = PointX2;
+		PointY3 = PointY2;
+	} 
+}
+function Clear()
+{
+	ctx1.clearRect(0,0,500,500);
+}
+
+function Draw()
+{
+    for (var i = 0;i < PointX1.length; i++)
+    {
+        for (var j = 0;j < PointX1[i].length; j++)
+        {
+            PointX1[i][j] /= 25000;
+            PointY1[i][j] /= 25000;
+			PointY1[i][j] -= 100;
+			PointX1[i][j] -= 500;
+			PointX1[i][j] *= 12;
+			PointY1[i][j] *= 12; 
+			PointY1[i][j] -= 400;
+			PointX1[i][j] -= 100;
+			PointY1[i][j] = 540 - PointY1[i][j];
+
+        }
+    }
+
+    ctx1.lineWidth = 2; 
+    for (var i = 0;i < PointX1.length;i++)
+    {        
+        for (var j = 0;j < PointX1[i].length;j++)
+        {                   
+            ctx1.beginPath();
+            ctx1.moveTo(PointX1[i][j],PointY1[i][j]);
+            ctx1.lineTo(PointX1[i][j+1],PointY1[i][j+1]); 
+            ctx1.stroke();
+        }
+    }
+}
+
+function Mercator()
+{
+	var B0 = 0; //标准纬线
+	a = 6378137;
+	b = 6356752.3142;
+	var e = Math.sqrt((Math.pow(a,2) - Math.pow(b,2)) / Math.pow(a,2));
+	var e2 = Math.pow((Math.pow(a,2) - Math.pow(b,2)) / Math.pow(b,2),2);
+	var K = Math.pow(a,2) / b / Math.sqrt(1 + e2 * Math.pow(Math.cos(B0 * Math.PI / 180),2))
+			* Math.cos(B0 * Math.PI / 180);
+
+	var B_old = 0;
+    var B_new = 0;
+	var L0 = 0;
+	for (var i = 0;i < PointX3.length; i++)
+	{
+		for (var j = 0; j < PointX3[i].length; j++)
+		{
+			if (PointX3[i][j] == "NAN" || PointX3[i][j] == "")
+			{
+				break;
+			}
+			B_new = Math.PI / 2 - 2 * Math.atan(Math.exp(-PointY3[i][j] / K) * Math.exp(e / 2 * 
+			Math.log((1 - e * Math.sin(B_old)) / (1 + e * Math.sin(B_old)))));
+			B_old = B_new;
+
+			PointX3[i][j] = (PointX3[i][j] / K + L0) * 180 / Math.PI;
+			PointY3[i][j] = (B_new) * 180 / Math.PI
+		}
+	}
+	for (var i = 0; i < PointX3.length; i++)
+	{
+		for (var j = 0;j < PointX3[i].length; j++)
+		{
+			PointX4[i][j] = PointX3[i][j];
+			PointY4[i][j] = PointY3[i][j];
+		}
+	}
+}
+
+function Draw2()
+{
+	for (var i = 0;i < PointX3.length; i++)
+    {
+        for (var j = 0;j < PointX3[i].length; j++)
+        {
+            PointX3[i][j] -= 100;
+            PointY3[i][j] -= 20;
+
+			PointX3[i][j] *= 20;
+			PointY3[i][j] *= 20;
+
+			PointX3[i][j] -= 300;
+			PointY3[i][j] -= 200;
+
+			PointX3[i][j] *= 3;
+			PointY3[i][j] *= 3;
+
+			PointX3[i][j] += 50;
+			PointY3[i][j] += 100;
+
+			PointY3[i][j] = 540 - PointY3[i][j];
+        }
+    }
+
+	//绘制
+	ctx1.clearRect(0,0,500,500);
+	ctx1.lineWidth = 2; 
+    for (var i = 0;i < PointX3.length;i++)
+    {        
+        for (var j = 0;j < PointX3[i].length;j++)
+        {                   
+            ctx1.beginPath();
+            ctx1.moveTo(PointX3[i][j],PointY3[i][j]);
+            ctx1.lineTo(PointX3[i][j+1],PointY3[i][j+1]); 
+            ctx1.stroke();
+        }
+    }	
+}
+
+function AreaCalculate1()
+{
+	var sum0 = 0; 
+	for(var j = 0;j < PointX2.length; j++)
+	{
+		sum0 = 0;
+		for (var i = 0; i < PointX2[j].length - 1; i++) 
+		{  
+			if(PointX2[j][i+1] == "NAN" || PointX2[j][i+1] == "")
+				{
+					break;
+				}
+			sum0 += (PointX2[j][i] * PointY2[j][i+1] - PointX2[j][i+1] * PointY2[j][i]);  
+		}  
+		Area1[j] = (Math.abs(sum0 + (PointX2[j][i] * PointY2[j][0]) - (PointX2[j][0] * PointY2[j][i]))) / 2;
+	}
+		document.getElementById("txt0").value = "墨卡托投影反算前各市面积";
+		document.getElementById("txt1").value = "面积 1 : " + Area1[1];
+		document.getElementById("txt2").value = "面积 2 : " + Area1[2];
+		document.getElementById("txt3").value = "面积 3 : " + Area1[3];
+		document.getElementById("txt4").value = "面积 4 : " + Area1[4];
+		document.getElementById("txt5").value = "面积 5 : " + Area1[5];
+		document.getElementById("txt6").value = "面积 6 : " + Area1[6];
+		document.getElementById("txt7").value = "面积 7 : " + Area1[7];
+		document.getElementById("txt8").value = "面积 8 : " + Area1[8];
+		document.getElementById("txt9").value = "面积 9 : " + Area1[9];
+		document.getElementById("txt10").value = "面积 10 : " + Area1[10];
+		document.getElementById("txt11").value = "面积 11 : " + Area1[11];
+		document.getElementById("txt12").value = "面积 12 : " + Area1[12];
+		document.getElementById("txt13").value = "面积 13 : " + Area1[13];
+		document.getElementById("txt14").value = "说明:以上计算基于XY坐标";
+}
+
+function AreaCalculate2()
+{
+	var sum0 = 0; 
+	for(var j = 0;j < PointX4.length; j++)
+	{
+		sum0 = 0;
+		for (var i = 0; i < PointX4[j].length - 1; i++) 
+		{  
+			if(PointX4[j][i+1] == "NAN" || PointX4[j][i+1] == "")
+				{
+					break;
+				}
+			sum0 += (PointX4[j][i] * PointY4[j][i+1] - PointX4[j][i+1] * PointY4[j][i]);  
+		}  
+		Area1[j] = (Math.abs(sum0 + (PointX4[j][i] * PointY4[j][0]) - (PointX4[j][0] * PointY4[j][i]))) / 2;
+	}
+		document.getElementById("txt0").value = "墨卡托投影反算后各市面积";
+		document.getElementById("txt1").value = "面积 1 : " + Area1[1];
+		document.getElementById("txt2").value = "面积 2 : " + Area1[2];
+		document.getElementById("txt3").value = "面积 3 : " + Area1[3];
+		document.getElementById("txt4").value = "面积 4 : " + Area1[4];
+		document.getElementById("txt5").value = "面积 5 : " + Area1[5];
+		document.getElementById("txt6").value = "面积 6 : " + Area1[6];
+		document.getElementById("txt7").value = "面积 7 : " + Area1[7];
+		document.getElementById("txt8").value = "面积 8 : " + Area1[8];
+		document.getElementById("txt9").value = "面积 9 : " + Area1[9];
+		document.getElementById("txt10").value = "面积 10 : " + Area1[10];
+		document.getElementById("txt11").value = "面积 11 : " + Area1[11];
+		document.getElementById("txt12").value = "面积 12 : " + Area1[12];
+		document.getElementById("txt13").value = "面积 13 : " + Area1[13];
+		document.getElementById("txt14").value = "说明:以上计算基于经纬度坐标";
+}
+
+</script>
+
+</body>
+<html>
