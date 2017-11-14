@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type = "text/javascript">
+	</script>
+	<mata charset = "utf-8">
+</head>
+<body>
+    <div id = "div1"  />
+
+    <table border= "1">
+        <tr>
+        <td><center>道格拉斯算法</center></td>
+        </tr>
+        <tr>
+        <td><center>10150412_贡威腾</center></td>
+        </tr>
+        <tr>
+            <td>
+                <center>
+                    <input id = "fileinput" type = "file"  />
+                </center>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <center>
+                    <button onclick="Readfile()">读取</button>
+					<button onclick="Draw()">绘制</button>
+                </center>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <center>
+                <button onclick="lanbert()">兰伯特转换</button>
+                <button onclick="yasuo()">道格拉斯算法</button>
+                </center>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <center>
+                    请输入阈值：
+                    <input type = "number" min ="1" max ="100" id = "yuzhi" >
+                    <br></br>
+                    压缩率：
+                    <input id = "txt1" type = "text" size="40">
+                </center>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <canvas id = "myCanvas1" width = "500" height = "500"
+                style = "border : 3px solid #99D499">
+                </canvas>
+            </td>
+        </tr>
+        
+
+    </table>
+
+<script>
+    //存储读入的坐标
+    var drawPointX1 = new Array();
+    var drawPointY1 = new Array();
+    for (var m = 0;m < 462;m++)
+    {
+        drawPointX1[m] = new Array;
+        drawPointY1[m] = new Array;
+        for (var n = 0;n < 1000 ; n++)
+        {
+            drawPointX1[m][n] = "";
+            drawPointY1[m][n] = "";
+        }
+    }
+
+    //存储坐标变换前的数据
+    var PointX1 = new Array();
+    var PointY1 = new Array();
+    for (var m = 0;m < 462;m++)
+    {
+        PointX1[m] = new Array;
+        PointY1[m] = new Array;
+        for (var n = 0;n < 1000 ; n++)
+        {
+            PointX1[m][n] = "";
+            PointY1[m][n] = "";
+        }
+    }
+
+    //存储兰伯特转换后的坐标
+    var PointX2 = new Array();
+    var PointY2 = new Array();
+    for (var m = 0;m < 462;m++)
+    {
+        PointX2[m] = new Array;
+        PointY2[m] = new Array;
+        for (var n = 0;n < 1000 ; n++)
+        {
+            PointX2[m][n] = "";
+            PointY2[m][n] = "";
+        }
+    }
+    
+    //存储道格拉斯算法后的坐标
+    var PointX3 = new Array();
+    var PointY3 = new Array();
+    for (var m = 0;m < 462;m++)
+    {
+        PointX3[m] = new Array;
+        PointY3[m] = new Array;
+        for (var n = 0;n < 1000 ; n++)
+        {
+            PointX3[m][n] = "";
+            PointY3[m][n] = "";
+        }
+    }
+
+    //压缩后的点
+    var yasuoPointX = new Array();
+    var yasuoPointY = new Array();
+    for (var m = 0;m < 462;m++)
+    {
+        yasuoPointX[m] = new Array;
+        yasuoPointY[m] = new Array;
+        for (var n = 0;n < 1000 ; n++)
+        {
+            yasuoPointX[m][n] = "";
+            yasuoPointY[m][n] = "";
+        }
+    }
+var c1 = document.getElementById("myCanvas1");
+var ctx1 = c1.getContext("2d");
+ctx1.fillStyle = "FF0000";
+
+function Readfile()
+{
+	var file = document.getElementById("fileinput").files[0];   
+	var reader = new FileReader();
+	reader.readAsText(file);
+	reader.onload = function(e)
+	{
+		var str = this.result; 
+
+		var items = new Array();
+		items = str.split("END\r\n"); //存储每个笔画
+		var lines = new Array();
+		for (var m = 0;m < items.length ; m++) //存储每个笔画每行的内容
+		{
+			lines[m] = new Array();
+			for (var n = 0;n < 13000;n++)
+			{
+				lines[m][n] = "";
+			}
+		}
+		for (var i = 0;i < items.length ; i++)
+		{
+			lines[i] = items[i].split("\r\n");
+		}
+		for (var p = 0;p < lines.length ; p++)
+		{
+			for (var q = 1;q < lines[p].length; q++)
+			{
+				PointX1[p][q-1] = Number(lines[p][q].split(",")[0]);
+				PointY1[p][q-1] = Number(lines[p][q].split(",")[1]);
+                drawPointX1[p][q-1] = Number(lines[p][q].split(",")[0]);
+				drawPointY1[p][q-1] = Number(lines[p][q].split(",")[1]);
+			}
+		}
+
+	} 
+}
+function Draw()
+{
+    for (var i = 0;i < PointX1.length; i++)
+    {
+        for (var j = 0;j < PointX1[i].length; j++)
+        {
+            drawPointX1[i][j] -= 70;
+            drawPointX1[i][j] *= 7;
+            drawPointY1[i][j] *= 7;
+            drawPointY1[i][j] = 500 - drawPointY1[i][j];
+        }
+    }
+
+    ctx1.lineWidth = 2; 
+    for (var i = 0;i < PointX1.length;i++)
+    {        
+        for (var j = 0;j < PointX1[i].length;j++)
+        {                   
+            ctx1.beginPath();
+            ctx1.moveTo(drawPointX1[i][j],drawPointY1[i][j]);
+            ctx1.lineTo(drawPointX1[i][j+1],drawPointY1[i][j+1]); 
+            ctx1.stroke();
+        }
+    }
+}
+
+function lanbert()
+{
+	var B0 = 0; //标准纬线
+	a = 6378137;
+	b = 6356752.3142;
+	var e = Math.sqrt((Math.pow(a,2) - Math.pow(b,2)) / Math.pow(a,2));
+	var e2 = Math.pow((Math.pow(a,2) - Math.pow(b,2)) / Math.pow(b,2),2);
+	var K = Math.pow(a,2) / b / Math.sqrt(1 + e2 * Math.pow(Math.cos(B0 * Math.PI / 180),2))
+			* Math.cos(B0 * Math.PI / 180);
+
+	var B_old = 0;
+    var B_new = 0;
+	var L0 = 0;
+	for (var i = 0;i < PointX1.length; i++)
+	{
+		for (var j = 0; j < PointX1[i].length; j++)
+		{
+			if (PointX1[i][j] == "NAN" || PointX1[i][j] == "")
+			{
+				break;
+			}
+			B_new = Math.PI / 2 - 2 * Math.atan(Math.exp(-PointY1[i][j] / K) * Math.exp(e / 2 * 
+			Math.log((1 - e * Math.sin(B_old)) / (1 + e * Math.sin(B_old)))));
+			B_old = B_new;
+
+			PointX2[i][j] = (PointX1[i][j] / K + L0) * 180 / Math.PI;
+			PointY2[i][j] = (B_new) * 180 / Math.PI
+		}
+	}
+    /*
+    for (var i = 0;i < PointX1.length; i++)
+	{
+		for (var j = 0; j < PointX1[i].length; j++)
+		{
+            PointX3[i][j] = PointX2[i][j] * 200000;
+            PointY3[i][j] = PointY2[i][j] * 200000;
+            //PointY3[i][j] += 100;
+            PointX3[i][j] -= 100;
+            PointX3[i][j] *=3;
+            PointY3[i][j] *=3;
+        }
+    }
+    ctx1.clearRect(0,0,500,500);
+    ctx1.lineWidth = 2; 
+    for (var i = 0;i < PointX3.length - 1;i++)
+    {        
+        for (var j = 0;j < PointX3[i].length - 1;j++)
+        {   
+            if (PointX3[i][j+1] <= 0 || PointY3[i+1][j] <= 0 ||PointX3[i+1][j] <= 0 || PointY3[i][j+1] <= 0)
+                continue;               
+            ctx1.beginPath();
+            ctx1.moveTo(PointX3[i][j],PointY3[i][j]);
+            ctx1.lineTo(PointX3[i][j+1],PointY3[i][j+1]); 
+            ctx1.stroke();
+        }
+    }
+    */
+}
+
+function yasuo()
+{
+    yasuoyuzhi = parseInt(document.getElementById("yuzhi").value);
+    var zhongdianX = new Array;
+    var zhongdianY = new Array;
+    var k = new Array;
+    var b = new Array;
+    var distance = new Array;
+    var yasuohouX = new Array;
+    var yasuohouY = new Array;
+
+    for (var i = 0 ;i < PointX2.length ; i++)
+    {
+        zhongdianX[i] = new Array;
+        zhongdianY[i] = new Array;
+        distance[i] = new Array;
+        yasuohouX[i] = new Array;
+        yasuohouY[i] = new Array;
+    }
+    for  (var i = 0;i < PointX2.length ; i++)
+    {
+        for (var j = 0; j < PointX2[i].length ; j++)
+        {
+            if (PointX2[i][j] == "" || PointX2[i][j] == 0 || PointY2[i][j] == "" || PointY2[i][j] == 0)
+            {
+                if (j % 2 == 0)
+                {
+                    zhongdianX[i] = PointX2[i][j / 2];
+                    zhongdianY[i] = PointY2[i][j / 2];
+                }
+                else
+                {
+                    zhongdianX[i] = PointX2[i][(j+1) / 2];
+                    zhongdianY[i] = PointY2[i][(j+1) / 2];
+                }
+                k[i] = (PointY2[i][0] - zhongdianY[i]) / (PointX2[i][0] - zhongdianX[i]);
+                b[i] = (PointX2[i][0] * zhongdianY[i] - PointY2[i][0] * zhongdianX[i]) / (PointX2[i][0] - zhongdianX[i]);
+                break;
+            }
+        }
+    }
+    for (var i = 0;i < PointX2.length; i++)
+    {
+        for (var j = 0; j < PointX2[i].length; j++)
+        {
+            distance[i][j] = Math.abs((k[i] * PointX2[i][j] - PointY2[i][j] + b[i]) / Math.sqrt(k[i] * k[i] + 1))
+        }
+    }
+    
+    for (var i = 0; i < PointX2.length ;i++)
+    {
+        for (var j = 0; j < PointX2[i].length ;j++)
+        {
+            if(distance[i][j] * 10000 <= yasuoyuzhi)
+            {
+                yasuohouX[i].push(PointX2[i][j]);
+                yasuohouY[i].push(PointY2[i][j]);
+            } 
+            else
+            {
+                continue;
+            }
+        }
+        
+    }
+    sumorigin = 0
+    for(var i  = 0;i < PointX2.length;i++)
+    {
+        for(var j = 0;j < PointX2[i].length;j++)
+        {
+            if(PointX2[i][j] == "" || PointX2[i][j] == 0 || PointY2[i][j] == "" || PointY2[i][j] == 0)
+            {
+                sumorigin += 1;
+            }
+        }
+    }
+    sumyasuohou = 0
+    for(var i  = 0;i < yasuohouX.length;i++)
+    {
+        for(var j = 0;j < yasuohouX[i].length;j++)
+        {
+            if(yasuohouX[i][j] == "" || yasuohouX[i][j] == 0 || yasuohouY[i][j] == "" || yasuohouY[i][j] == 0)
+            {
+                sumyasuohou += 1;
+            }
+        }
+    }
+    result = sumyasuohou / sumorigin;
+    document.getElementById("txt1").value = parseInt(result * 100) + "%";
+    for (var i = 0;i < yasuohouX.length; i++)
+	{
+		for (var j = 0; j < yasuohouX[i].length; j++)
+		{
+            yasuohouX[i][j] = yasuohouX[i][j] * 200000;
+            yasuohouY[i][j] = yasuohouY[i][j] * 200000;
+            yasuohouX[i][j] -= 125;
+            yasuohouX[i][j] *= 4;
+            yasuohouY[i][j] *= 4;
+            yasuohouY[i][j] = 500 - yasuohouY[i][j];
+        }
+    }
+    ctx1.clearRect(0,0,500,500);
+    ctx1.lineWidth = 2; 
+    for (var i = 0;i < yasuohouX.length - 1;i++)
+    {        
+        for (var j = 0;j < yasuohouX[i].length - 1;j++)
+        {   
+            if (yasuohouX[i][j+1] == -125 || yasuohouY[i][j+1] == 500 || yasuohouX[i+1][j] == -125 || yasuohouY[i+1][j] == 500)
+                continue;               
+            ctx1.beginPath();
+            ctx1.moveTo(yasuohouX[i][j],yasuohouY[i][j]);
+            ctx1.lineTo(yasuohouX[i][j+1],yasuohouY[i][j+1]); 
+            ctx1.stroke();
+        }
+    }
+    
+}
+
+</Script>
+</body>
+</html>
