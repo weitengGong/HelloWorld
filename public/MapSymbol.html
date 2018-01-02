@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type = "text/javascript">
+	</script>
+	<mata charset = "utf-8">
+</head>
+<body>
+    <div id = "div1"  />
+
+    <table border= "1">
+        <tr>
+        <td><center>地图符号</center></td>
+        </tr>
+        <tr>
+        <td><center>10150412_贡威腾</center></td>
+        </tr>
+        <tr>
+            <td>
+                <center>
+                    <input id = "fileinput1" type = "file"  />
+                    <button onclick="Readfile1()">读取</button>
+                </center>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <center>
+                    <input id = "fileinput2" type = "file"  />
+                    <button onclick="Readfile2()">读取</button>
+                </center>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <center>
+					<button onclick="Draw(Point1_X,Point1_Y)">绘制Building</button>
+                    <button onclick="Draw(Point2_X,Point2_Y)">绘制Vegrgn</button>
+                </center>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <center>
+                <button onclick="building()">building地图符号</button>
+                <button onclick="vegrgn()">vegrgn地图符号</button>
+                </center>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <canvas id = "myCanvas1" width = "600" height = "400"
+                style = "border : 3px solid #99D499">
+                </canvas>
+            </td>
+        </tr>
+        
+
+    </table>
+
+<script>
+var Point1_X = new Array();
+var Point1_Y = new Array();
+
+//存储地物1的符号坐标
+for (var m = 0;m < 480;m++)
+{
+    Point1_X[m] = new Array;
+    Point1_Y[m] = new Array;
+    for (var n = 0;n < 200 ; n++)
+    {
+        Point1_X[m][n] = "";
+        Point1_Y[m][n] = "";
+    }
+}
+
+//存储地物2的符号坐标
+var Point2_X = new Array();
+var Point2_Y = new Array();
+for (var m = 0;m < 157;m++)
+{
+    Point2_X[m] = new Array;
+    Point2_Y[m] = new Array;
+    for (var n = 0;n < 200 ; n++)
+    {
+        Point2_X[m][n] = "";
+        Point2_Y[m][n] = "";
+    }
+}
+
+var c1 = document.getElementById("myCanvas1");
+var ctx1 = c1.getContext("2d");
+ctx1.fillStyle = "FF0000";
+
+function Readfile1()
+{
+	var file = document.getElementById("fileinput1").files[0];   
+    var reader = new FileReader();
+    reader.readAsText(file);
+    reader.onload = function(e)
+    {
+        var str = this.result; 
+        for (var m = 0;m < 480 ; m++)
+        {
+            for (var n = 0;n < 200; n++)
+            {
+                Point1_X[m][n] = "";
+                Point1_Y[m][n] = "";
+            }
+        }
+        var items = new Array();
+        items = str.split("END\r\n"); //存储每个笔画
+        var lines = new Array();
+        for (var m = 0;m < items.length ; m++) //存储每个笔画每行的内容
+        {
+            lines[m] = new Array();
+            for (var n = 0;n < 10;n++)
+            {
+                lines[m][n] = "";
+            }
+        }
+        for (var i = 0;i < items.length ; i++)
+        {
+            lines[i] = items[i].split("\r\n");
+        }
+        for (var p = 0;p < lines.length ; p++)
+        {
+            for (var q = 1;q < lines[p].length ; q++)
+            {
+                Point1_X[p][q-1] = Number(lines[p][q].split(",")[0]);
+                Point1_Y[p][q-1] = Number(lines[p][q].split(",")[1]);
+            }
+        }
+    }
+}
+ 
+function Readfile2()
+{
+	var file = document.getElementById("fileinput2").files[0];   
+    var reader = new FileReader();
+    reader.readAsText(file);
+    reader.onload = function(e)
+    {
+        var str = this.result; 
+        for (var m = 0;m < 157 ; m++)
+        {
+            for (var n = 0;n < 200; n++)
+            {
+                Point2_X[m][n] = "";
+                Point2_Y[m][n] = "";
+            }
+        }
+        var items = new Array();
+        items = str.split("END\r\n"); //存储每个笔画
+        var lines = new Array();
+        for (var m = 0;m < items.length ; m++) //存储每个笔画每行的内容
+        {
+            lines[m] = new Array();
+            for (var n = 0;n < 10;n++)
+            {
+                lines[m][n] = "";
+            }
+        }
+        for (var i = 0;i < items.length ; i++)
+        {
+            lines[i] = items[i].split("\r\n");
+        }
+        for (var p = 0;p < lines.length ; p++)
+        {
+            for (var q = 1;q < lines[p].length ; q++)
+            {
+                Point2_X[p][q-1] = Number(lines[p][q].split(",")[0]);
+                Point2_Y[p][q-1] = Number(lines[p][q].split(",")[1]);
+            }
+        }
+    }
+}
+ 
+function Draw(PointX,PointY)
+{
+    for (var i = 0;i < PointX.length; i++)
+    {
+        for (var j = 0;j < PointX[i].length; j++)
+        {
+            if(PointX[i][j] == "" || PointX[i][j] == 0)
+            {
+                continue;
+            } 
+            PointX[i][j] -= 430000;
+            PointY[i][j] -= 3260000;
+            PointX[i][j] += 10;
+            PointY[i][j] -= 425;
+            PointX[i][j] *= 2.2;
+            PointY[i][j] *= 2.2;
+            PointY[i][j] = 400 - PointY[i][j];
+        }
+    }
+
+    ctx1.lineWidth = 2; 
+    for (var i = 0;i < PointX.length;i++)
+    {        
+        for (var j = 0;j < PointX[i].length;j++)
+        {      
+            if(PointX[i][j] == "" || PointX[i][j] == 0)
+            {
+                continue;
+            }              
+            ctx1.beginPath();
+            ctx1.moveTo(PointX[i][j],PointY[i][j]);
+            ctx1.lineTo(PointX[i][j+1],PointY[i][j+1]); 
+            ctx1.stroke();
+        }
+    }
+}
+
+
+function building()
+{   //848画布对角线长度
+    var LinePointX = new Array;
+    var LinePointY = new Array;
+    var LinePointX2 = new Array;
+    var LinePointY2 = new Array;
+    for (var m = 0;m < 120;m++ ) //53
+    {
+        LinePointX[m] = new Array;
+        LinePointY[m] = new Array;
+        LinePointX2[m] = new Array;
+        LinePointY2[m] = new Array;
+        //848 = 53 * 16
+        k1 = -1;
+        b1 = m * 8;        
+        for(var i = 0;i < Point1_X.length;i++)
+        {
+            for(var j = 0; j < Point1_X[i].length-1;j++)
+            {
+                k2 = (Point1_Y[i][j] - Point1_Y[i][j+1])/(Point1_X[i][j] - Point1_X[i][j+1]);
+                b2 = Point1_Y[i][j] - k2 * Point1_X[i][j];
+
+                //两直线交点：k1 * x + b1 = k2 * x + b2
+                // x = (b2-b1)/(k1-k2)
+
+                var jiaodianX = (b2 - b1) / (k1 - k2);
+                var jiaodianY = k1 * jiaodianX + b1;
+                
+                var x1 = Point1_X[i][j];
+                var x2 = Point1_X[i][j+1];
+                var y1 = Point1_Y[i][j];
+                var y2 = Point1_Y[i][j+1];
+                var maxX = Math.max(x1,x2);
+                var minX = Math.min(x1,x2);
+                var maxY = Math.max(y1,y2);
+                var minY = Math.min(y1,y2);
+                if (jiaodianX >= minX && jiaodianX <= maxX && jiaodianY >= minY && jiaodianY <= maxY)
+                {
+                    LinePointX[m].push(jiaodianX);
+                    LinePointY[m].push(jiaodianY);
+                }              
+            }
+            
+        }
+        //因为大小无法保证，因此还需要对结果进行排序。
+        /*
+        for (var i = 0;i < LinePointX[m].length;i++)
+        {
+            var sum  = new Array;
+            for(var k = 0;k < LinePointX[m].length;k++)
+            {
+                sum[k] = 0;
+            }
+            for(var j = 0;j < LinePointX[m];j++)
+            {
+                var a1 = LinePointX[m][i];
+                var a2 = LinePointX[m][j];
+                var b1 = LinePointY[m][i];
+                var b2 = LinePointY[m][j];
+                if (i != j && a1 > a2 && b1 < b2 )
+                {
+                    sum[i] += 1;
+                }
+            }
+            for(var z = 0;z < sum.length;z++)
+            {
+                LinePointX2[m][z] = LinePointX[m][sum[z]];
+                LinePointY2[m][z] = LinePointY[m][sum[z]];
+            }
+        }*/
+    }
+    
+    ctx1.strokeStyle = "grey";
+    for(var i = 0;i < LinePointX.length;i++)
+    {
+        for (var j = 0;j < LinePointX[i].length-1;j++,j++)
+        {
+            a = (LinePointY[i][j+1]-LinePointY[i][j])*(LinePointY[i][j+1]-LinePointY[i][j]);
+            b = (LinePointX[i][j+1]-LinePointX[i][j])*(LinePointX[i][j+1]-LinePointX[i][j]);
+            long = Math.sqrt(a+b);
+            
+            if (long > 80)
+            {
+                continue;
+            }
+            
+            ctx1.beginPath();
+            ctx1.moveTo(LinePointX[i][j],LinePointY[i][j]);
+            ctx1.lineTo(LinePointX[i][j+1],LinePointY[i][j+1]); 
+            ctx1.stroke();
+        }
+    }
+}
+
+function vegrgn()
+{ //848画布对角线长度
+    var LinePointX = new Array;
+    var LinePointY = new Array;
+    for (var m = 0;m < 120;m++ ) //53
+    {
+        LinePointX[m] = new Array;
+        LinePointY[m] = new Array;
+        //848 = 53 * 16
+        k1 = -1;
+        b1 = m * 8;        
+        for(var i = 0;i < Point2_X.length;i++)
+        {
+            for(var j = 0; j < Point2_X[i].length-1;j++)
+            {
+                k2 = (Point2_Y[i][j] - Point2_Y[i][j+1])/(Point2_X[i][j] - Point2_X[i][j+1]);
+                b2 = Point2_Y[i][j] - k2 * Point2_X[i][j];
+
+                //两直线交点：k1 * x + b1 = k2 * x + b2
+                // x = (b2-b1)/(k1-k2)
+
+                var jiaodianX = (b2 - b1) / (k1 - k2);
+                var jiaodianY = k1 * jiaodianX + b1;
+                
+                var x1 = Point2_X[i][j];
+                var x2 = Point2_X[i][j+1];
+                var y1 = Point2_Y[i][j];
+                var y2 = Point2_Y[i][j+1];
+                var maxX = Math.max(x1,x2);
+                var minX = Math.min(x1,x2);
+                var maxY = Math.max(y1,y2);
+                var minY = Math.min(y1,y2);
+                if (jiaodianX >= minX && jiaodianX <= maxX && jiaodianY >= minY && jiaodianY <= maxY)
+                {
+                    LinePointX[m].push(jiaodianX);
+                    LinePointY[m].push(jiaodianY);
+                }
+                
+                /*
+                if  (x1 > jiaodianX && jiaodianX > x2 && jiaodianY < y1 && jiaodianX > y2)
+                {
+                    LinePointX[m].push(jiaodianX);
+                    LinePointY[m].push(jiaodianY);
+                }
+                if  (x1 < jiaodianX && jiaodianX < x2 && jiaodianY < y1 && jiaodianX > y2)
+                {
+                    LinePointX[m].push(jiaodianX);
+                    LinePointY[m].push(jiaodianY);
+                }     
+                if  (x1 > jiaodianX && jiaodianX > x2 && jiaodianY > y1 && jiaodianX > y2)
+                {
+                    LinePointX[m].push(jiaodianX);
+                    LinePointY[m].push(jiaodianY);
+                }
+                if  (x1 < jiaodianX && jiaodianX < x2 && jiaodianY < y1 && jiaodianX > y2)
+                {
+                    LinePointX[m].push(jiaodianX);
+                    LinePointY[m].push(jiaodianY);
+                }
+                */           
+            }
+
+        }
+    }
+
+    ctx1.strokeStyle = "green"
+    for(var i = 0;i < LinePointX.length;i++)
+    {
+        for (var j = 0;j < LinePointX[i].length-1;j++,j++)
+        {
+            a = (LinePointY[i][j+1]-LinePointY[i][j])*(LinePointY[i][j+1]-LinePointY[i][j]);
+            b = (LinePointX[i][j+1]-LinePointX[i][j])*(LinePointX[i][j+1]-LinePointX[i][j]);
+            long = Math.sqrt(a+b);
+            if (long < 100 && long > 20)
+            {
+                var centerX = (LinePointX[i][j] + LinePointX[i][j+1]) /2;
+                var centerY = (LinePointY[i][j] + LinePointY[i][j+1]) /2;
+                ctx1.beginPath();
+                ctx1.moveTo(centerX,centerY);
+                ctx1.lineTo(centerX + 3,centerY - 3); 
+                ctx1.moveTo(centerX,centerY);
+                ctx1.lineTo(centerX - 3,centerY - 3);
+                ctx1.moveTo(centerX,centerY);
+                ctx1.lineTo(centerX,centerY +5);
+                ctx1.stroke();
+            }
+            if (long > 100 && long < 200)
+            {
+                var fenliangX = (LinePointX[i][j] - LinePointX[i][j+1]) /3;
+                var fenliangY = (LinePointY[i][j] - LinePointY[i][j+1]) /3;
+                var centerX1 = LinePointX[i][j] - fenliangX;
+                var centerY1 = LinePointY[i][j] - fenliangY;
+                var centerX2 = LinePointX[i][j] - fenliangX * 2;
+                var centerY2 = LinePointY[i][j] - fenliangY * 2;
+                ctx1.beginPath();
+                ctx1.moveTo(centerX1,centerY1);
+                ctx1.lineTo(centerX1 + 3,centerY1 - 3); 
+                ctx1.moveTo(centerX1,centerY1);
+                ctx1.lineTo(centerX1 - 3,centerY1 - 3);
+                ctx1.moveTo(centerX1,centerY1);
+                ctx1.lineTo(centerX1,centerY1 +5);
+
+                ctx1.moveTo(centerX2,centerY2);
+                ctx1.lineTo(centerX2 + 3,centerY2 - 3); 
+                ctx1.moveTo(centerX2,centerY2);
+                ctx1.lineTo(centerX2 - 3,centerY2 - 3);
+                ctx1.moveTo(centerX2,centerY2);
+                ctx1.lineTo(centerX2,centerY2 +5);
+                ctx1.stroke();
+            }
+            
+        }
+    }
+}
+
+</Script>
+</body>
+</html>
